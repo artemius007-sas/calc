@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Калькулятор изделий из камня</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--bg:#f3f4f2;--surface:#fff;--ink:#1b2321;--muted:#66726e;--line:#dfe3e0;--accent:#0e6b5c;--accent-ink:#fff;--accent-soft:#e1f1ed;--warn:#b4432b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a18;--surface:#1d2523;--ink:#e9eeec;--muted:#9aa8a3;--line:#2f3a37;--accent:#3fb59f;--accent-ink:#06201b;--accent-soft:#1f3a34;--warn:#ef8a72}}
+:root[data-theme="dark"]{--bg:#141a18;--surface:#1d2523;--ink:#e9eeec;--muted:#9aa8a3;--line:#2f3a37;--accent:#3fb59f;--accent-ink:#06201b;--accent-soft:#1f3a34;--warn:#ef8a72}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{max-width:1280px;margin:0 auto;padding:20px;display:grid;grid-template-columns:65fr 35fr;gap:24px;align-items:start}
+header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1{font-size:26px;margin:0;font-weight:800;letter-spacing:-.01em}
+header span{color:var(--muted);font-size:15px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px}
+.step h2{font-size:19px;margin:0 0 16px;font-weight:700}
+.step h2 b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:15px;margin-right:10px}
+label.f{display:block;font-size:14px;color:var(--muted);font-weight:600;margin-bottom:6px}
+input[type=number],input[type=text],input[type=tel],select{width:100%;font:inherit;font-size:18px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input:focus-visible,select:focus-visible,button:focus-visible,.pill:focus-within,.shape:focus-within{outline:3px solid var(--accent);outline-offset:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.row{margin-top:16px}
+.tabs,.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{position:relative;flex:1;min-width:150px;border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:600;text-align:center;background:var(--bg)}
+.pill input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.pill:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pill small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.shapes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.shape{position:relative;border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-weight:600;background:var(--bg)}
+.shape input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.shape svg{width:100%;max-width:140px;height:92px}
+.shape svg .b{fill:var(--line);stroke:var(--muted)}
+.shape svg .t{fill:var(--ink);stroke:none;font:700 9px Manrope,system-ui,sans-serif;text-anchor:middle}
+.shape:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.shape:has(input:checked) svg .b{fill:var(--surface);stroke:var(--accent)}
+.ends{margin-top:8px}
+.thickrow{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.thickrow .pills{flex:1 1 360px;flex-wrap:nowrap;gap:6px}
+.thickrow .pill{min-width:0;padding:11px 4px;font-size:16px;white-space:nowrap}
+.thickrow .tc{flex:0 0 160px}
+.ends .chk{font-size:15px;padding:3px 0}
+.chk{display:flex;gap:10px;align-items:center;cursor:pointer;font-weight:600;padding:6px 0}
+.chk input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.chk small{color:var(--muted);font-weight:500}
+.sub{margin-top:14px;padding:14px;border-radius:10px;background:var(--bg)}
+.hide{display:none!important}
+.cut{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cut:last-child{border:0}
+.cut small{display:block;color:var(--muted);font-size:13px}
+.ctr{display:flex;align-items:center;gap:6px}
+.ctr button{width:42px;height:42px;font-size:22px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.ctr button:active{background:var(--accent-soft)}
+.ctr output{min-width:30px;text-align:center;font-weight:800;font-size:19px}
+.link{background:none;border:0;color:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-left:6px}
+.combo{position:relative}
+.list{position:absolute;left:0;right:0;top:100%;margin-top:4px;max-height:340px;overflow:auto;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;z-index:15;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.list .g{position:sticky;top:0;padding:8px 14px;font-size:13px;font-weight:700;color:var(--muted);background:var(--bg)}
+.list .o{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;font-weight:600}
+.list .o.sub{padding-left:32px;font-weight:500}
+.list .o small{display:block;color:var(--muted);font-size:13px;font-weight:500}
+.list .o b{white-space:nowrap;font-size:15px}
+.list .o.act,.list .o:hover{background:var(--accent-soft)}
+.picked{margin-top:8px;font-size:15px;color:var(--accent);font-weight:600}
+aside{position:sticky;top:16px}
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.sum h2{margin:0 0 12px;font-size:19px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:16px}
+.line span:first-child{color:var(--muted)}
+.line.m{border-top:1px solid var(--line);margin-top:6px;padding-top:12px}
+.line.d span:last-child{color:var(--warn)}
+.total{margin:14px 0;padding:16px;border-radius:12px;background:var(--accent);color:var(--accent-ink)}
+.total small{display:block;opacity:.85;font-size:14px;font-weight:600}
+.total strong{font-size:36px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.btn{width:100%;font:inherit;font-weight:700;padding:14px;border-radius:10px;border:1.5px solid var(--accent);cursor:pointer;font-size:17px}
+.btn.p{background:var(--accent);color:var(--accent-ink);margin-bottom:10px}
+.btn.s{background:transparent;color:var(--accent)}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:10px;font-weight:700;opacity:0;pointer-events:none;transition:.2s;z-index:20}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:900px){.app{grid-template-columns:1fr;padding:14px}aside{position:static}.shapes{grid-template-columns:1fr 1fr 1fr}.shape svg{height:76px}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>Калькулятор изделий из камня</h1><span>Предварительный расчёт для входящих звонков</span></header>
+
+<main>
+<section class="step">
+<h2><b>1</b>Материал</h2>
+<div class="tabs" id="matTabs"></div>
+<div class="row"><label class="f" for="brand">Бренд, категория, артикул или цвет</label>
+<div class="combo"><input type="text" id="brand" role="combobox" aria-expanded="false" aria-controls="bList" autocomplete="off" placeholder="Начните вводить: R543, Аварус, базовый…"><div id="bList" class="list hide" role="listbox"></div></div>
+<div class="picked" id="picked"></div></div>
+</section>
+
+<section class="step">
+<h2><b>2</b>Форма и размеры, мм</h2>
+<div class="shapes" id="shapes"></div>
+<div class="grid row" id="dims"></div>
+<label class="chk row"><input type="checkbox" id="island"> Добавить остров или барную стойку</label>
+<div class="sub grid hide" id="islandBox">
+<div><label class="f" for="iL">Длина острова, мм</label><input type="number" id="iL" min="0" inputmode="numeric"></div>
+<div><label class="f" for="iW">Ширина острова, мм</label><input type="number" id="iW" min="0" inputmode="numeric"></div>
+</div>
+</section>
+
+<section class="step">
+<h2><b>3</b>Толщина, кромка и бортик</h2>
+<label class="f">Толщина изделия</label>
+<div class="thickrow"><div class="pills" id="thick"></div><div class="tc"><label class="f" for="thickCustom">Своя толщина (мм)</label><input type="number" id="thickCustom" min="1" step="1" inputmode="numeric" placeholder="50"></div></div>
+<div class="picked" id="thickInfo"></div>
+<label class="f row">Профиль торцевой кромки</label>
+<div class="pills" id="edge"></div>
+<div class="grid row">
+<div><label class="f" for="edgeM">Видимый торец, пог.м <button type="button" class="link" id="edgeAuto">Рассчитать заново</button></label><input type="number" id="edgeM" min="0" step="0.01" inputmode="decimal"><div class="ends"><label class="chk"><input type="checkbox" id="endL" checked><span id="endLt"></span></label><label class="chk"><input type="checkbox" id="endR" checked><span id="endRt"></span></label></div></div>
+<div><label class="f" for="bort">Пристеночный бортик, пог.м</label><input type="number" id="bort" min="0" step="0.01" inputmode="decimal" placeholder="0"></div>
+</div>
+<label class="chk row"><input type="checkbox" id="apron"> Стеновая панель (фартук)</label>
+<div class="sub grid hide" id="apronBox">
+<div><label class="f" for="aL">Длина фартука, мм</label><input type="number" id="aL" min="0" inputmode="numeric"></div>
+<div><label class="f" for="aH">Высота фартука, мм</label><input type="number" id="aH" min="0" inputmode="numeric" value="600"></div>
+</div>
+</section>
+
+<section class="step">
+<h2><b>4</b>Вырезы и мойка</h2>
+<div id="cuts"></div>
+</section>
+
+<section class="step">
+<h2><b>5</b>Услуги и скидка</h2>
+<label class="chk"><input type="checkbox" id="sMeasure" > Замер лазерным оборудованием <small id="tMeasure"></small></label>
+<label class="chk"><input type="checkbox" id="sDeliv" > Доставка по городу <small id="tDeliv"></small></label>
+<label class="chk"><input type="checkbox" id="sInst" > Монтаж и склейка на объекте <small id="tInst"></small></label>
+<div class="row" style="max-width:260px"><label class="f" for="disc">Доп. скидка менеджера, %</label><input type="number" id="disc" min="0" max="10" step="0.5" value="0" inputmode="decimal"></div>
+</section>
+</main>
+
+<aside><div class="sum">
+<h2>Смета</h2>
+<div class="line"><span>Чистая площадь</span><b id="aNet">0</b></div>
+<div class="line"><span>С учётом раскроя (×<span id="kWaste">1.15</span>)</span><b id="aGross">0</b></div>
+<div class="line m"><span>Материал</span><b id="rMat">0 ₽</b></div>
+<div class="line"><span>Обработка, кромка и бортик</span><b id="rProc">0 ₽</b></div>
+<div class="line"><span>Вырезы и мойка</span><b id="rCut">0 ₽</b></div>
+<div class="line"><span>Доставка и монтаж</span><b id="rSvc">0 ₽</b></div>
+<div class="line d hide" id="rDiscRow"><span>Скидка</span><b id="rDisc">0 ₽</b></div>
+<div class="total"><small>Итого для клиента</small><strong id="rTotal">0 ₽</strong></div>
+<div class="two">
+<div><label class="f" for="cName">Имя клиента</label><input type="text" id="cName"></div>
+<div><label class="f" for="cPhone">Телефон</label><input type="tel" id="cPhone"></div>
+</div>
+<button class="btn p" id="copy">Скопировать КП для WhatsApp / Telegram</button>
+<button class="btn s" id="reset">Сбросить расчёт</button>
+</div></aside>
+</div>
+<div id="toast" role="status" aria-live="polite">Скопировано!</div>
+
+<script>
+/* ===================== НАСТРОЙКИ (меняйте цены и коэффициенты здесь) ===================== */
+const CONFIG = {
+  // Материалы: waste — коэффициент запаса на обрезки; price — цена за м² в ₽
+  materials: {
+    // brand — бренд (заголовок группы в поиске); aliases — другие написания для поиска;
+    // cat — название категории; decors — конкретные декоры: { article: 'R543', name: 'Соль Каспия' }
+    // (name можно не указывать). Цена декора берётся у его категории.
+    acryl:  { label: 'Акриловый камень', waste: 1.15, items: [
+      { brand: 'Grandex', aliases: ['грандекс'], cat: 'Базовый',     name: 'Grandex Базовый',   price: 14000, decors: [] },
+      { brand: 'Grandex', aliases: ['грандекс'], cat: 'Премиум',     name: 'Grandex Премиум',   price: 18500, decors: [] },
+      { brand: 'Staron',  aliases: ['старон'],   cat: 'Однотонный',  name: 'Staron Однотонный', price: 15500, decors: [] },
+      { brand: 'Staron',  aliases: ['старон'],   cat: 'Мрамор',      name: 'Staron Мрамор',     price: 21000, decors: [] } ] },
+    quartz: { label: 'Кварцевый агломерат', waste: 1.20, items: [
+      { brand: 'AvaRus', aliases: ['аварус', 'avarus'], cat: 'Базовый R112',      name: 'AvaRus Базовый R112',      price: 16000, decors: [ { article: 'R112' } ] },
+      { brand: 'AvaRus', aliases: ['аварус', 'avarus'], cat: 'Средний R510/R555', name: 'AvaRus Средний R510/R555', price: 19500, decors: [ { article: 'R510' }, { article: 'R555' } ] },
+      { brand: 'AvaRus', aliases: ['аварус', 'avarus'], cat: 'Премиум R543',      name: 'AvaRus Премиум R543',      price: 24000, decors: [ { article: 'R543' } ] },
+      { brand: 'Avant Quartz', aliases: ['авант'],      cat: 'Avant Quartz',      name: 'Avant Quartz',             price: 22000, decors: [] } ] }
+  },
+  // Толщина (одинаковая для акрила и кварца): extra — доплата ₽ за пог.м видимого торца.
+  // Цены ориентировочные — поправьте под реальный прайс. 37 мм = «37,5» из прайса, если нужно.
+  thickness: {
+    presets: [ { mm: 12, extra: 0 }, { mm: 20, extra: 0, def: true }, { mm: 24, extra: 1000 },
+               { mm: 37, extra: 2500 }, { mm: 40, extra: 3000 } ],
+    // Своя толщина: больше overBaseMm → (толщина − overBaseMm) × overPerMm ₽/пог.м;
+    // не больше — берётся доплата ближайшей меньшей кнопки (до 12 мм — 0 ₽)
+    overBaseMm: 40, overPerMm: 125
+  },
+  // Кромка: extra — доплата ₽ за пог.м видимого торца
+  edges: [ { name: 'Стандартная', note: 'фаска / R3', extra: 0 },
+           { name: 'Фигурная / непроливайка', note: '+1 800 ₽/пог.м', extra: 1800 } ],
+  bortikPrice: 2200,            // ₽ за пог.м пристеночного бортика
+  // Вырезы и мойка: price — ₽ за штуку; acrylOnly — показывать только для акрила
+  cuts: [
+    { id: 'hobOn',  name: 'Вырез под варочную панель (накладной)',          price: 2500 },
+    { id: 'hobFl',  name: 'Вырез под варочную панель (вровень)',            price: 5500 },
+    { id: 'sinkOn', name: 'Вырез под накладную мойку',                      price: 2500 },
+    { id: 'sinkUn', name: 'Подстольный монтаж мойки (с полировкой торца)',  price: 6000 },
+    { id: 'sinkInt',name: 'Интегрированная мойка из того же камня',         price: 18000, acrylOnly: true },
+    { id: 'tap',    name: 'Отверстие под смеситель / дозатор',              price: 500 }
+  ],
+  services: {
+    measure: 3000,              // замер, ₽ (поставьте 0, если замер бесплатный при заказе)
+    delivery: 4500,             // доставка по городу, ₽
+    installPct: 0.10,           // монтаж: доля от стоимости изделия (после скидки)
+    installMin: 6000            // монтаж: минимальная сумма, ₽
+  },
+  maxDiscountPct: 10            // максимальная скидка менеджера, %
+};
+/* ========================================================================================= */
+
+const $ = id => document.getElementById(id);
+const rub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+const m2 = n => n.toFixed(2).replace('.', ',') + ' м²';
+const num = id => Math.max(0, parseFloat($(id)?.value) || 0);
+const S = { mat: 'acryl', shape: 'straight', edgeManual: false, cuts: {}, th: 20, sel: { i: 0, decor: '' } };
+const SHAPES = {
+  straight: { name: 'Прямая', f: [['L1','Длина L1, мм'],['W1','Глубина W1, мм']],
+    svg: '<rect class="b" x="8" y="22" width="94" height="26" rx="3"/><text class="t" x="45" y="39">L1</text><text class="t" x="88" y="39">W1</text>' },
+  l: { name: 'Г-образная', f: [['L1','Длина L1, мм'],['W1','Глубина W1, мм'],['L2','Длина L2 (общая), мм'],['W2','Глубина W2, мм']],
+    svg: '<path class="b" d="M8 6H102V66H80V28H8Z"/><text class="t" x="22" y="20">W1</text><text class="t" x="52" y="20">L1</text><text class="t" x="91" y="46">L2</text><text class="t" x="91" y="60">W2</text>' },
+  u: { name: 'П-образная', f: [['L1','Длина L1, мм'],['W1','Глубина W1, мм'],['L2','Длина L2 (общая), мм'],['W2','Глубина W2, мм'],['L3','Длина L3 (общая), мм'],['W3','Глубина W3, мм']],
+    svg: '<path class="b" d="M8 6H102V66H80V28H30V66H8Z"/><text class="t" x="43" y="20">L1</text><text class="t" x="68" y="20">W1</text><text class="t" x="19" y="46">L2</text><text class="t" x="19" y="60">W2</text><text class="t" x="91" y="46">L3</text><text class="t" x="91" y="60">W3</text>' }
+};
+
+function init() {
+  $('matTabs').innerHTML = Object.keys(CONFIG.materials).map((k, i) =>
+    `<label class="pill"><input type="radio" name="mat" value="${k}" ${i ? '' : 'checked'}>${CONFIG.materials[k].label}</label>`).join('');
+  $('thick').innerHTML = CONFIG.thickness.presets.map(p => `<label class="pill"><input type="radio" name="thick" value="${p.mm}" ${p.def ? 'checked' : ''}>${p.mm} мм</label>`).join('');
+  S.th = (CONFIG.thickness.presets.find(p => p.def) || CONFIG.thickness.presets[0]).mm;
+  $('shapes').innerHTML = Object.keys(SHAPES).map((k, i) =>
+    `<label class="shape"><input type="radio" name="shape" value="${k}" ${i ? '' : 'checked'}><svg viewBox="0 0 110 70" stroke-width="2" aria-hidden="true">${SHAPES[k].svg}</svg><div>${SHAPES[k].name}</div></label>`).join('');
+  $('edge').innerHTML = CONFIG.edges.map((e, i) =>
+    `<label class="pill"><input type="radio" name="edge" value="${i}" ${i ? '' : 'checked'}>${e.name}<small>${e.note}</small></label>`).join('');
+  $('cuts').innerHTML = CONFIG.cuts.map(c =>
+    `<div class="cut" id="cut_${c.id}"><div>${c.name}<small>${c.price.toLocaleString('ru-RU')} ₽/шт.</small></div>
+     <div class="ctr"><button type="button" data-c="${c.id}" data-d="-1" aria-label="Уменьшить">−</button><output id="n_${c.id}">0</output><button type="button" data-c="${c.id}" data-d="1" aria-label="Увеличить">+</button></div></div>`).join('');
+  const sv = CONFIG.services;
+  $('tMeasure').textContent = '(' + sv.measure.toLocaleString('ru-RU') + ' ₽)';
+  $('tDeliv').textContent = '(' + sv.delivery.toLocaleString('ru-RU') + ' ₽)';
+  $('tInst').textContent = '(' + Math.round(sv.installPct * 100) + '%, минимум ' + sv.installMin.toLocaleString('ru-RU') + ' ₽)';
+  $('disc').max = CONFIG.maxDiscountPct;
+  buildMaterial(); buildDims(); calc();
+}
+
+function buildMaterial() {
+  const mat = CONFIG.materials[S.mat];
+  choose(0, '');
+  CONFIG.cuts.forEach(c => {
+    if (c.acrylOnly) { $('cut_' + c.id).classList.toggle('hide', S.mat !== 'acryl'); if (S.mat !== 'acryl') { S.cuts[c.id] = 0; $('n_' + c.id).textContent = 0; } }
+  });
+  $('kWaste').textContent = mat.waste.toFixed(2);
+}
+
+function buildDims() {
+  const keep = {};
+  document.querySelectorAll('#dims input').forEach(i => keep[i.id] = i.value);
+  $('dims').innerHTML = SHAPES[S.shape].f.map(([k, t]) =>
+    `<div><label class="f" for="d${k}">${t}</label><input type="number" id="d${k}" min="0" inputmode="numeric" value="${keep['d' + k] || ''}"></div>`).join('');
+  updateEnds();
+}
+/* Подписи чекбоксов открытых торцов: какая глубина относится к левому и правому краю */
+function endNames() {
+  return S.shape === 'u' ? ['W2', 'W3'] : S.shape === 'l' ? ['W1', 'W2'] : ['W1', 'W1'];
+}
+function updateEnds() {
+  const n = endNames();
+  $('endLt').textContent = `Открытый левый торец (+${n[0]})`;
+  $('endRt').textContent = `Открытый правый торец (+${n[1]})`;
+}
+
+const d = k => num('d' + k);
+function geometry() {
+  const L1 = d('L1'), W1 = d('W1'), W2 = d('W2'), W3 = d('W3');
+  let area = L1 * W1, front = L1;   // front — внутренний передний край вдоль шкафов
+  if (S.shape === 'l') {
+    area += Math.max(0, d('L2') - W1) * W2;
+    front = Math.max(0, L1 - W2) + Math.max(0, d('L2') - W1);
+  }
+  if (S.shape === 'u') {
+    area += Math.max(0, d('L2') - W1) * W2 + Math.max(0, d('L3') - W1) * W3;
+    front = Math.max(0, L1 - W2 - W3) + Math.max(0, d('L2') - W1) + Math.max(0, d('L3') - W1);
+  }
+  // Открытые боковые торцы: прибавляем глубину соответствующего края, если галочка включена
+  const dep = { W1, W2, W3 }, n = endNames();
+  let edge = front + ($('endL').checked ? dep[n[0]] : 0) + ($('endR').checked ? dep[n[1]] : 0);
+  area /= 1e6; edge /= 1000;
+  if ($('island').checked) { const a = num('iL'), b = num('iW'); area += a * b / 1e6; edge += 2 * (a + b) / 1000; }
+  return { area, edge };
+}
+
+function thicknessInfo() {
+  const T = CONFIG.thickness, c = num('thickCustom'), mm = c > 0 ? c : S.th;
+  let extra = 0;
+  if (mm > T.overBaseMm) extra = (mm - T.overBaseMm) * T.overPerMm;
+  else T.presets.forEach(p => { if (p.mm <= mm) extra = p.extra; });
+  return { mm, extra, name: mm + ' мм' };
+}
+function calc() {
+  const mat = CONFIG.materials[S.mat], br = mat.items[S.sel.i];
+  const th = thicknessInfo();
+  $('thickInfo').textContent = 'Толщина ' + th.mm + ' мм · доплата ' + Math.round(th.extra).toLocaleString('ru-RU') + ' ₽/пог.м торца';
+  const ed = CONFIG.edges[+document.querySelector('input[name=edge]:checked').value];
+  const g = geometry();
+  if (!S.edgeManual) $('edgeM').value = g.edge ? g.edge.toFixed(2) : '';
+  let net = g.area;
+  if ($('apron').checked) net += num('aL') * num('aH') / 1e6;
+  const gross = net * mat.waste;
+  const rMat = gross * br.price;
+  const edgeM = num('edgeM'), bort = num('bort');
+  const rProc = edgeM * (th.extra + ed.extra) + bort * CONFIG.bortikPrice;
+  let rCut = 0;
+  CONFIG.cuts.forEach(c => { rCut += (S.cuts[c.id] || 0) * c.price; });
+  const product = rMat + rProc + rCut;
+  const pct = Math.min(num('disc'), CONFIG.maxDiscountPct);
+  const disc = product * pct / 100;
+  const after = product - disc, sv = CONFIG.services;
+  let svc = 0;
+  if ($('sMeasure').checked) svc += sv.measure;
+  if ($('sDeliv').checked) svc += sv.delivery;
+  if ($('sInst').checked && after > 0) svc += Math.max(after * sv.installPct, sv.installMin);
+  const total = after + svc;
+  $('aNet').textContent = m2(net); $('aGross').textContent = m2(gross);
+  $('rMat').textContent = rub(rMat); $('rProc').textContent = rub(rProc);
+  $('rCut').textContent = rub(rCut); $('rSvc').textContent = rub(svc);
+  $('rDiscRow').classList.toggle('hide', disc <= 0); $('rDisc').textContent = '−' + rub(disc);
+  $('rTotal').textContent = rub(total);
+  return { mat, br, th, ed, g, net, gross, edgeM, bort, pct, total, rMat, rProc, rCut, svc, disc };
+}
+
+function offer() {
+  const r = calc(), sh = SHAPES[S.shape], name = $('cName').value.trim();
+  const dims = sh.f.map(([k]) => d(k)).join(' × ');
+  const L = [];
+  L.push(`Здравствуйте${name ? ', ' + name : ''}! Благодарим за обращение. Ваш предварительный расчёт:`, '');
+  L.push(`• Материал: ${r.mat.label}, ${selLabel()}`);
+  L.push(`• Форма: ${sh.name.toLowerCase()}, размеры (мм): ${dims}`);
+  if ($('island').checked) L.push(`• Остров / барная стойка: ${num('iL')} × ${num('iW')} мм`);
+  L.push(`• Толщина: ${r.th.name}; кромка: ${r.ed.name.toLowerCase()}`);
+  L.push(`• Видимый торец: ${r.edgeM.toFixed(2).replace('.', ',')} пог.м`);
+  if (r.bort > 0) L.push(`• Пристеночный бортик: ${r.bort.toFixed(2).replace('.', ',')} пог.м`);
+  if ($('apron').checked) L.push(`• Стеновая панель: ${num('aL')} × ${num('aH')} мм`);
+  const cuts = CONFIG.cuts.filter(c => S.cuts[c.id]).map(c => `${c.name.toLowerCase()} — ${S.cuts[c.id]} шт.`);
+  if (cuts.length) L.push('• Вырезы: ' + cuts.join('; '));
+  const sv = [];
+  if ($('sMeasure').checked) sv.push('замер'); if ($('sDeliv').checked) sv.push('доставка'); if ($('sInst').checked) sv.push('монтаж');
+  L.push(`• Услуги: ${sv.length ? sv.join(', ') : 'не включены'}`);
+  L.push(`• Площадь: ${m2(r.net)} (с учётом раскроя ${m2(r.gross)})`);
+  if (r.disc > 0) L.push(`• Скидка: ${r.pct}%`);
+  L.push('', `Итоговая стоимость: ${rub(r.total)}`, '', 'Расчёт предварительный, точная стоимость фиксируется после лазерного замера.');
+  return L.join('\n');
+}
+
+function toast() { const t = $('toast'); t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 1800); }
+function copyText(txt) {
+  const fallback = () => { const a = document.createElement('textarea'); a.value = txt; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch (e) {} a.remove(); toast(); };
+  try { navigator.clipboard.writeText(txt).then(toast, fallback); } catch (e) { fallback(); }
+}
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.name === 'mat') { S.mat = t.value; buildMaterial(); }
+  else if (t.name === 'shape') { S.shape = t.value; buildDims(); }
+  else if (t.name === 'thick') { S.th = +t.value; $('thickCustom').value = ''; }
+  else if (t.id === 'thickCustom') {
+    const on = +t.value > 0;
+    document.querySelectorAll('input[name=thick]').forEach(r => r.checked = !on && +r.value === S.th);
+  }
+  else if (t.id === 'edgeM') S.edgeManual = true;
+  else if (t.id === 'endL' || t.id === 'endR') S.edgeManual = false;
+  else if (t.id === 'island') $('islandBox').classList.toggle('hide', !t.checked);
+  else if (t.id === 'apron') $('apronBox').classList.toggle('hide', !t.checked);
+  else if (t.id === 'disc') { if (+t.value > CONFIG.maxDiscountPct) t.value = CONFIG.maxDiscountPct; if (+t.value < 0) t.value = 0; }
+  calc();
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-c]');
+  if (b) { const id = b.dataset.c; S.cuts[id] = Math.max(0, (S.cuts[id] || 0) + +b.dataset.d); $('n_' + id).textContent = S.cuts[id]; calc(); }
+});
+$('edgeAuto').onclick = () => { S.edgeManual = false; calc(); };
+$('copy').onclick = () => copyText(offer());
+$('reset').onclick = () => {
+  document.querySelectorAll('input[type=text],input[type=tel],input[type=number]').forEach(i => i.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(i => i.checked = [ 'endL', 'endR'].includes(i.id));
+  document.querySelectorAll('input[type=radio]').forEach(i => i.checked = i.defaultChecked);
+  $('disc').value = 0; $('aH').value = 600;
+  $('islandBox').classList.add('hide'); $('apronBox').classList.add('hide');
+  S.mat = 'acryl'; S.shape = 'straight'; S.edgeManual = false; S.cuts = {};
+  S.th = +document.querySelector('input[name=thick]:checked').value;
+  CONFIG.cuts.forEach(c => $('n_' + c.id).textContent = 0);
+  buildMaterial(); buildDims(); calc(); window.scrollTo({ top: 0 });
+};
+/* ---------- Умный поиск материала (автокомплит) ---------- */
+const norm = s => (s || '').toLowerCase().replace(/ё/g, 'е');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const rubm2 = n => n.toLocaleString('ru-RU') + ' ₽/м²';
+const decorLabel = x => [x.article, x.name].filter(Boolean).join(' ');
+function selLabel() { const it = CONFIG.materials[S.mat].items[S.sel.i]; return it.name + (S.sel.decor ? ' — ' + S.sel.decor : ''); }
+function choose(i, decor) {
+  S.sel = { i, decor: decor || '' };
+  const it = CONFIG.materials[S.mat].items[i];
+  $('brand').value = selLabel();
+  $('picked').textContent = 'Цена: ' + rubm2(it.price) + (decor ? ' · артикул / цвет: ' + decor : ' · общая категория');
+}
+let opts = [], act = -1;
+const list = $('bList');
+function closeList() { list.classList.add('hide'); $('brand').setAttribute('aria-expanded', 'false'); $('brand').value = selLabel(); }
+function renderList(q) {
+  const items = CONFIG.materials[S.mat].items, toks = norm(q).split(/\s+/).filter(Boolean);
+  const hit = h => toks.every(t => norm(h).includes(t));
+  const groups = {}, order = []; opts = [];
+  items.forEach((it, i) => {
+    const hay = [it.brand, ...(it.aliases || []), it.cat].join(' '), rows = [];
+    if (hit(hay)) rows.push({ i, decor: '', label: it.name, tag: 'общая категория', price: it.price });
+    it.decors.forEach(x => { if (hit(hay + ' ' + decorLabel(x))) rows.push({ i, decor: decorLabel(x), label: it.brand + ' ' + decorLabel(x), tag: 'категория: ' + it.cat, price: it.price, sub: true }); });
+    if (rows.length) { (groups[it.brand] = groups[it.brand] || []).push(...rows); if (!order.includes(it.brand)) order.push(it.brand); }
+  });
+  const row = r => { opts.push(r); return `<div class="o${r.sub ? ' sub' : ''}" role="option" data-k="${opts.length - 1}"><span>${esc(r.label)}<small>${esc(r.tag)}</small></span><b>${rubm2(r.price)}</b></div>`; };
+  let html = '';
+  order.forEach(b => { html += `<div class="g">${esc(b)}</div>` + groups[b].map(row).join(''); });
+  if (!opts.length && q.trim()) {
+    html = `<div class="g">Не найдено. Использовать «${esc(q.trim())}» как свой цвет или артикул в категории:</div>` +
+      items.map((it, i) => row({ i, decor: q.trim(), label: it.name, tag: 'со своим цветом / артикулом', price: it.price })).join('');
+  }
+  list.innerHTML = html || '<div class="g">Нет вариантов</div>';
+  act = -1; list.classList.remove('hide'); $('brand').setAttribute('aria-expanded', 'true');
+}
+function setAct(n) {
+  const els = list.querySelectorAll('.o'); if (!els.length) return;
+  act = (n + els.length) % els.length;
+  els.forEach((e, k) => e.classList.toggle('act', k === act));
+  els[act].scrollIntoView({ block: 'nearest' });
+}
+function pick(k) { const r = opts[k]; if (!r) return; choose(r.i, r.decor); closeList(); calc(); }
+const bi = $('brand');
+bi.addEventListener('focus', () => { bi.select(); renderList(''); });
+bi.addEventListener('click', () => { if (list.classList.contains('hide')) { bi.select(); renderList(''); } });
+bi.addEventListener('input', () => renderList(bi.value));
+bi.addEventListener('blur', closeList);
+bi.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); if (list.classList.contains('hide')) renderList(''); else setAct(act + 1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); setAct(act - 1); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (act >= 0) pick(+list.querySelectorAll('.o')[act].dataset.k); else if (opts.length === 1) pick(0); }
+  else if (e.key === 'Escape') closeList();
+});
+list.addEventListener('mousedown', e => { e.preventDefault(); const o = e.target.closest('.o'); if (o) pick(+o.dataset.k); });
+init();
+</script>
+</body>
+</html>
